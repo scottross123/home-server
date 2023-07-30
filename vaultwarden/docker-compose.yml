@@ -1,0 +1,18 @@
+version: '3'
+
+volumes:
+  vw-data:
+
+services:
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    restart: always
+    ports:
+      - 9876:80
+      - 3012:3012
+    environment:
+      DOMAIN: ${DOMAIN}
+      WEBSOCKET_ENABLED: true
+    volumes:
+      - vw-data:/data

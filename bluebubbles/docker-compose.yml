@@ -1,0 +1,29 @@
+# this shit doesn't work and i can't be bothered to find out why
+version: "3"
+
+services:
+  bluebubbles:
+    image: sickcodes/docker-osx:naked
+    dns: 
+      - 1.1.1.1
+    devices: 
+      - /dev/kvm
+    network_mode: "host"
+    ports:
+      - 5999:5999
+      - 1234:1234
+      - 50922:10022
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - ./maindisk.qcow2:/image
+      - ./bootdisk.qcow2:/bootdisk:ro
+    environment:
+      - IMAGE_PATH="/image"
+      - BOOTDISK="/bootdisk"
+      - EXTRA="-display none -vnc 0.0.0.0:99,password-secret=secvnc0 -object secret,id=secvnc0,data=vncpass"
+      - ADDITIONAL_PORTS="hostfwd=tcp::1234-:1234,"
+      - DISPLAY=:99
+      - WIDTH=1920
+      - HEIGHT=1080
+      - NOPICKER=true
+    restart: "no"

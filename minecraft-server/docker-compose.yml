@@ -1,0 +1,59 @@
+version: "3"
+
+# https://github.com/itzg/docker-minecraft-server
+
+# TODO add profiles to differnet servers, or upgrade to v3.9 and set some as do not start
+
+# https://docs.docker.com/compose/profiles/
+
+# https://minecraft.fandom.com/wiki/Formatting_codes
+
+# TODO change the default passwords to something else
+
+services:
+  web:
+    image: itzg/rcon
+    environment:
+      RWA_USERNAME: ${RWA_USERNAME}
+      RWA_PASSWORD: ${RWA_PASSWORD}
+      RWA_ADMIN: "TRUE"
+      # is referring to the hostname of 'mc' compose service below
+      RWA_RCON_HOST: ${RCON_HOST}
+      # needs to match the password configured for the container, which is 'minecraft' by default
+      RWA_RCON_PASSWORD: ${RCON_PASSWORD}
+    ports:
+      # web ui
+      - 4326:4326
+      # websocket access
+      - 4327:4327
+  
+  backups:
+    image: itzg/mc-backup
+    environment:
+      BACKUP_INTERVAL: "2h"
+      RCON_HOST: ${RCON_HOST}
+      PRE_BACKUP_SCRIPT: |
+        echo "Before backup!"
+        echo "Also before backup from $$RCON_HOST to $$DEST_DIR"
+      POST_BACKUP_SCRIPT_FILE: /post-backup.sh
+    volumes:
+      # mount the same volume used by server, but read-only
+      - ${MC_DATA_PATH}/data:/data:ro
+      # use a host attached directory so that it in turn can be backed up
+      # to external/cloud storage
+      - ${MC_DATA_PATH}/backups:/backups
+      - ./post-backup.sh:/post-backup.sh:ro
+    network_mode: "service:mc"
+
+  mc:
+    container_name: mc-server
+    image: itzg/minecraft-server
+    ports:
+      - 25565:25565
+    env_file:
+      - vars.env
+    tty: true
+    stdin_open: true
+    restart: unless-stopped
+    volumes:
+      - ${MC_DATA_PATH}/data:/data

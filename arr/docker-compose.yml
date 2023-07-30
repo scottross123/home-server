@@ -1,0 +1,218 @@
+version: "3"
+
+volumes:
+  lidarr:
+  sonarr:
+  radarr:
+  readarr:	
+  prowlarr:
+  jellyseerr:
+  calibre:
+  calibre-web:
+  jellyfin:
+  jellyfin-cache:
+  qbittorrent:
+  deluge:
+  gluetun:
+
+services:
+  gluetun:
+    image: qmcgaw/gluetun
+    container_name: gluetun
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    ports:
+      - 8888:8888/tcp # HTTP proxy
+      - 8388:8388/tcp # Shadowsocks
+      - 8388:8388/udp # Shadowsocks
+      - 7070:7070 # qbit
+      - 6881:6881 # qbit
+      - 6881:6881/udp # qbit
+      - 8112:8112 # deluge
+      - 6882:6882 # deluge
+      - 6882:6882/udp #deluge
+    volumes:
+      - gluetun:/gluetun
+    environment:
+      - VPN_SERVICE_PROVIDER=mullvad
+      - VPN_TYPE=wireguard
+      - FIREWALL_VPN_INPUT_PORTS=57003
+      - WIREGUARD_PRIVATE_KEY=${WIREGUARD_PRIVATE_KEY}
+      - WIREGUARD_ADDRESSES=${WIREGUARD_ADDRESSES}
+      - SERVER_CITIES=${SERVER_CITIES}
+      - TZ=${TZ}
+      # Server list updater. See https://github.com/qdm12/gluetun/wiki/Updating-Servers#periodic-update
+      - UPDATER_PERIOD=
+      - UPDATER_VPN_SERVICE_PROVIDERS= 
+
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - WEBUI_PORT=7070
+    volumes:
+      - qbittorrent:/config
+      - ${PATH_TO_DATA}/torrents:/data/torrents
+    restart: unless-stopped
+    network_mode: "container:gluetun"
+    depends_on:
+      gluetun:
+        condition: service_healthy
+
+  deluge:
+    image: lscr.io/linuxserver/deluge:latest
+    container_name: deluge
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - DELUGE_LOGLEVEL=error #optional
+    volumes:
+      - deluge:/config
+      - ${PATH_TO_DATA}/torrents:/data/torrents
+    restart: unless-stopped
+    network_mode: "container:gluetun"
+    depends_on:
+      gluetun:
+        condition: service_healthy
+
+  readarr:
+    image: lscr.io/linuxserver/readarr:nightly
+    container_name: readarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - readarr:/config
+      - ${PATH_TO_DATA}:/data
+    ports:
+      - 8787:8787
+    restart: unless-stopped
+
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - sonarr:/config
+      - ${PATH_TO_DATA}:/data
+    ports:
+      - 8989:8989
+    restart: unless-stopped
+
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - UMASK=000
+    volumes:
+      - radarr:/config
+      - ${PATH_TO_DATA}:/data
+    ports:
+      - 7878:7878
+    restart: unless-stopped
+
+  lidarr:
+    image: lscr.io/linuxserver/lidarr:latest
+    container_name: lidarr 
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - lidarr:/config
+      - ${PATH_TO_DATA}:/data
+    ports:
+      - 8686:8686
+    restart: unless-stopped
+
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - prowlarr:/config
+      - ${PATH_TO_DATA}:/data
+    ports:
+      - 9696:9696
+    restart: unless-stopped
+      
+  calibre: 
+    image: lscr.io/linuxserver/calibre:latest
+    container_name: calibre    
+    security_opt:
+      - seccomp:unconfined
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - PASSWORD=${CALIBRE_PASSWORD}
+      - CLI_ARGS=#optional
+    volumes:
+      - calibre:/config
+      - ${PATH_TO_DATA}/media/books:/Calibre_Library
+      - ${PATH_TO_DATA}/torrents/books:/uploads
+    ports:
+      - 8080:8080
+      - 8181:8181
+      - 8081:8081
+    restart: unless-stopped
+
+  calibre-web:
+    image: lscr.io/linuxserver/calibre-web:latest
+    container_name: calibre-web
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - OAUTHLIB_RELAX_TOKEN_SCOPE=1 #optional
+    volumes:
+      - calibre-web:/config
+      - ${PATH_TO_DATA}/media/books:/books
+    ports:
+      - 8083:8083
+    restart: unless-stopped
+
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin:latest
+    container_name: jellyfin
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - UMASK=002
+    volumes:
+      - jellyfin:/config
+      - jellyfin-cache:/cache
+      - ${PATH_TO_DATA}/media:/media
+    ports:
+      - 8096:8096
+    restart: unless-stopped
+
+  jellyseerr:
+     image: fallenbagel/jellyseerr:latest
+     container_name: jellyseerr
+     environment:
+          - LOG_LEVEL=debug
+          - TZ=${TZ}
+     ports:
+          - 5055:5055
+     volumes:
+          - jellyseerr:/app/config
+     restart: unless-stopped
+
