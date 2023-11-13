@@ -19,6 +19,7 @@ services:
   gluetun:
     image: qmcgaw/gluetun
     container_name: gluetun
+    restart: unless-stopped
     cap_add:
       - NET_ADMIN
     devices:
@@ -36,13 +37,12 @@ services:
     volumes:
       - gluetun:/gluetun
     environment:
-      - VPN_SERVICE_PROVIDER=mullvad
-      - VPN_TYPE=wireguard
-      - FIREWALL_VPN_INPUT_PORTS=57003
-      - WIREGUARD_PRIVATE_KEY=${WIREGUARD_PRIVATE_KEY}
-      - WIREGUARD_ADDRESSES=${WIREGUARD_ADDRESSES}
-      - SERVER_CITIES=${SERVER_CITIES}
-      - TZ=${TZ}
+      - VPN_SERVICE_PROVIDER=protonvpn
+      - VPN_TYPE=openvpn
+      - OPENVPN_USER=${OPENVPN_USER}
+      - OPENVPN_PASSWORD=${OPENVPN_PASSWORD}
+      - SERVER_COUNTRIES=${SERVER_COUNTRIES}
+      - VPN_PORT_FORWARDING=on
       # Server list updater. See https://github.com/qdm12/gluetun/wiki/Updating-Servers#periodic-update
       - UPDATER_PERIOD=
       - UPDATER_VPN_SERVICE_PROVIDERS= 
