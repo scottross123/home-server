@@ -1,0 +1,5 @@
+!!! Allow ports being proxied in UFW firewall!!! See sudo ufw status then sudo ufw allow <PORT>
+
+Also setup a docker network so ports aren't exposed on host network
+
+https://nginxproxymanager.com/advanced-config/#best-practice-use-a-docker-network

@@ -1,8 +1,4 @@
-version: "3"
-
-networks:
-  gitea:
-    external: false
+version: "3.8"
 
 volumes:
   data:
@@ -10,20 +6,29 @@ volumes:
   postgres:
   act_runner:
 
+secrets:
+  gitea_db_passwd:
+    external: true
+  gitea_runner_token:
+    external: true
+
+networks:
+  gitea: 
+    external: true
+
 services:
   server:
-    image: gitea/gitea:1.20.2-rootless
+    image: gitea/gitea:latest-rootless
+    secrets:
+      - gitea_db_passwd
     environment:
       - GITEA__database__DB_TYPE=postgres
       - GITEA__database__HOST=db:5432
-      - GITEA__database__NAME=${DB_USER}
-      - GITEA__database__PASSWD=${DB_PASSWD}
+      - GITEA__database__NAME=gitea
+      - GITEA__database__PASSWD__FILE=/run/secrets/gitea_db_passwd
       - GITEA__server_ROOT_URL=${ROOT_URL}
       - GITEA__actions__ENABLED=true
       - GITEA__repository__ENABLE_PUSH_CREATE_USER=true
-    restart: always
-    networks:
-      - gitea
     volumes:
       - data:/var/lib/gitea
       - config:/etc/gitea
@@ -34,31 +39,42 @@ services:
       - "2222:2222"
     depends_on:
       - db
-  db:
-    image: postgres:14
-    restart: always
-    environment:
-      # ENV variables
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASSWD}
-      - POSTGRES_DB=gitea
-    volumes:
-      - postgres:/var/lib/postgresql/data
     networks:
       - gitea
+    deploy:
+      <<: *deploy
+
+  db:
+    image: postgres:14
+    secrets:
+      - gitea_db_passwd
+    environment:
+      - POSTGRES_USER=gitea
+      - POSTGRES_PASSWORD_FILE=/run/secrets/gitea_db_passwd
+      - POSTGRES_DB=gitea
+    volumes:
+      - postgres:/var/lib/postgresql/data    
+    networks:
+      - gitea
+    deploy:
+      <<: *deploy
+
   runner:
     image: gitea/act_runner
-    restart: always
     depends_on:
       - server
     volumes:
       - act_runner:/data
       - /var/run/docker.sock:/var/run/docker.sock
       - ./config.yaml:/config.yaml
+    secrets:
+      - gitea_runner_token
     environment:
       - CONFIG_FILE=/config.yaml
-      - GITEA_INSTANCE_URL=${INSTANCE_URL}
-      - GITEA_RUNNER_REGISTRATION_TOKEN=${RUNNER_TOKEN}
+      - GITEA_INSTANCE_URL=server:3010
+      - GITEA_RUNNER_REGISTRATION_TOKEN__FILE=/run/secrets/gitea_runner_token    
     networks:
       - gitea
+    deploy:
+      <<: *deploy
 

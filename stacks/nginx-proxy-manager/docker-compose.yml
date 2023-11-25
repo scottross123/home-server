@@ -4,10 +4,15 @@ volumes:
   data:
   letsencrypt:
 
+networks:
+  gitea:
+    external: true
+  servarr:
+    external: true
+
 services:
   npm:
     image: 'jc21/nginx-proxy-manager:latest'
-    restart: unless-stopped
     ports:
       - '80:80'
       - '81:81'
@@ -15,4 +20,11 @@ services:
     volumes:
       - data:/data
       - letsencrypt:/etc/letsencrypt
+    environment:
+      PUID: 1000
+      PGID: 1000
+    networks:
+      - gitea
+    deploy:
+      <<: *deploy
 

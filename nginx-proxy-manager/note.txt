@@ -1,1 +1,0 @@
-!!! Allow ports being proxied in UFW firewall!!! See sudo ufw status then sudo ufw allow <PORT>

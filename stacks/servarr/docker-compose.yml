@@ -1,0 +1,313 @@
+version: "3.8"
+
+# TODO create 'serverarr' user
+
+secrets:
+  proton_openvpn_user:
+    external: true
+  proton_openvpn_password:
+    external: true
+
+networks:
+  servarr:
+    external: true
+  vpn:
+    attachable: true
+    driver: overlay
+    driver_opts:
+      encrpted: 'true'
+
+volumes:
+  lidarr:
+  sonarr:
+  radarr:
+  readarr:	
+  prowlarr:
+  jellyseerr:
+  calibre:
+  calibre-web:
+  jellyfin:
+  jellyfin-cache:
+  qbittorrent:
+  deluge:
+  gluetun:
+
+services:
+  gluetun-launcher:
+    image: ixdotai/swarm-launcher:latest
+    volumes:
+      - '/var/run/docker.sock:/var/run/docker.sock:rw'
+    secrets:
+      - proton_openvpn_user
+      - proton_openvpn_password
+    environment:
+      LAUNCH_IMAGE: 'qmcgaw/gluetun'
+      LAUNCH_PROJECT_NAME: 'servarr'
+      # checks for latest image and pulls
+      LAUNCH_PULL: 'true'
+      LAUNCH_EXT_NETWORKS: 'servarr_vpn'
+      LAUNCH_CAP_ADD: 'NET_ADMIN'
+      LAUNCH_PRIVELEGED: 'true'
+      LAUNCH_ENVIRONMENTS: '
+        VPN_SERVICE_PROVIDER=protonvpn
+        VPN_TYPE=openvpn
+        OPENVPN_USER_SECRETFILE=/run/secrets/proton_openvpn_user
+        OPENVPN_PASSWORD_SECRETFILE=/run/secrets/proton_openvpn_password
+        SERVER_COUNTRIES="United States"
+        VPN_PORT_FORWARDING=on'
+      LAUNCH_PORTS: '
+        7070:7070
+        6881:6881
+        6881:6881/udp
+        8112:8112
+        6882:6882
+        6882:6882/udp
+        8989:8989'
+    networks:
+      - servarr
+      - vpn
+    deploy:
+      <<: *deploy
+
+  gluetun:
+    image: qmcgaw/gluetun
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    ports:
+      - 8888:8888/tcp # HTTP proxy
+      - 8388:8388/tcp # Shadowsocks
+      - 8388:8388/udp # Shadowsocks
+      - 7070:7070 # qbit
+      - 6881:6881 # qbit
+      - 6881:6881/udp # qbit
+      - 8112:8112 # deluge
+      - 6882:6882 # deluge
+      - 6882:6882/udp #deluge
+      - 8989:8989 # sonarr
+    volumes:
+      - gluetun:/gluetun
+    secrets:
+      - proton_openvpn_user
+      - proton_openvpn_password
+    environment:
+      # TODO try use a wiregaurd conf instead of openvpn usernames/passwords
+      - VPN_SERVICE_PROVIDER=protonvpn
+      - VPN_TYPE=openvpn
+      - OPENVPN_USER_SECRETFILE=/run/secrets/proton_openvpn_user
+      - OPENVPN_PASSWORD_SECRETFILE=/run/secrets/proton_openvpn_password
+      - SERVER_COUNTRIES="United States"
+      - VPN_PORT_FORWARDING=on
+    networks:
+      - servarr
+    deploy:
+      <<: *deploy
+
+
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+      - WEBUI_PORT=7070
+    volumes:
+      - qbittorrent:/config
+      - /mnt/data/torrents:/data/torrents
+    network_mode: "service:gluetun"
+    depends_on:
+      - gluetun
+    networks:
+      - servarr    
+    deploy:
+      <<: *deploy
+
+
+  deluge:
+    image: lscr.io/linuxserver/deluge:latest
+    container_name: deluge
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+      - DELUGE_LOGLEVEL=error #optional
+    volumes:
+      - deluge:/config
+      - /mnt/data/torrents:/data/torrents
+    network_mode: "service:gluetun"
+    depends_on:
+      - gluetun_launcher
+    networks:
+      - servarr    
+      - vpn
+    deploy:
+      <<: *deploy
+
+
+  readarr:
+    image: lscr.io/linuxserver/readarr:nightly
+    container_name: readarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+      - UMASK=002
+    volumes:
+      - readarr:/config
+      - /mnt/data:/data
+    ports:
+      - 8787:8787
+    networks:
+      - servarr
+    deploy:
+      <<: *deploy
+
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+    volumes:
+      - sonarr:/config
+      - /mnt/data:/data
+    networks:
+      - servarr
+    network_mode: "service:gluetun"
+    deploy:
+      <<: *deploy
+
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+      - UMASK=002
+    volumes:
+      - radarr:/config
+      - /mnt/data:/data
+    ports:
+      - 7878:7878
+    networks:
+      - servarr
+    deploy:
+      <<: *deploy
+
+  lidarr:
+    image: lscr.io/linuxserver/lidarr:latest
+    container_name: lidarr 
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+      - UMASK=002
+    volumes:
+      - lidarr:/config
+      - /mnt/data:/data
+    ports:
+      - 8686:8686    
+    networks:
+      - servarr     
+    deploy:
+       <<: *deploy
+
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+    volumes:
+      - prowlarr:/config
+      - /mnt/data:/data
+    ports:
+      - 9696:9696
+    networks:
+      - servarr     
+    deploy:
+       <<: *deploy
+      
+  # figure this one out later, or possible don't use at all
+  calibre: 
+    image: lscr.io/linuxserver/calibre:latest
+    container_name: calibre    
+    security_opt:
+      - seccomp:unconfined
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+      - PASSWORD=${CALIBRE_PASSWORD}
+      - CLI_ARGS=#optional
+    volumes:
+      - calibre:/config
+        #- data/media/books:/Calibre_Library
+        #- data /torrents/books:/uploads
+    networks:
+      - servarr
+    ports:
+      - 8080:8080
+      - 8181:8181
+      - 8081:8081
+    deploy:
+      replicas: 0
+
+  calibre-web:
+    image: lscr.io/linuxserver/calibre-web:latest
+    container_name: calibre-web
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+      - OAUTHLIB_RELAX_TOKEN_SCOPE=1 #optional
+    volumes:
+      - calibre-web:/config
+      - /mnt/data/media/books:/books
+      - /mnt/data/torrents/books:/uploads
+    ports:
+      - 8083:8083
+    networks:
+      - servarr     
+    deploy:
+       <<: *deploy
+
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin:latest
+    environment:
+      #- PUID=1000
+      #- PGID=1000
+      - TZ=America/New_York
+        #- UMASK=002
+    volumes:
+      - jellyfin:/config
+      - jellyfin-cache:/cache
+      - /mnt/data/media:/media
+    ports:
+      - 8096:8096
+    networks:
+      - servarr     
+    deploy:
+       <<: *deploy
+
+  jellyseerr:
+     image: fallenbagel/jellyseerr:latest
+     environment:  
+        - PUID=1000
+        - PGID=1000
+        - LOG_LEVEL=debug
+        - TZ=America/New_York
+     ports:
+        - 5055:5055
+     volumes:
+        - jellyseerr:/app/config
+     networks:
+        - servarr
+     deploy:
+       <<: *deploy
