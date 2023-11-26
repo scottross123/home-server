@@ -1,12 +1,6 @@
 version: "3.8"
 
-# TODO create 'serverarr' user
-
-secrets:
-  proton_openvpn_user:
-    external: true
-  proton_openvpn_password:
-    external: true
+# TODO create users
 
 networks:
   servarr:
@@ -18,86 +12,8 @@ volumes:
   radarr:
   readarr:	
   prowlarr:
-  qbittorrent:
-  deluge:
-  gluetun:
 
 services:
-  arch-qbittorrent:
-    image: binhex/arch-qbittorrentvpn
-    volumes:
-
-
-  gluetun-launcher:
-    image: ixdotai/swarm-launcher:latest
-    volumes:
-      - '/var/run/docker.sock:/var/run/docker.sock:rw'
-    secrets:
-      - proton_openvpn_user
-      - proton_openvpn_password
-    environment:
-      LAUNCH_IMAGE: 'qmcgaw/gluetun'
-      LAUNCH_PROJECT_NAME: 'servarr'
-      # checks for latest image and pulls
-      LAUNCH_PULL: 'true'
-      LAUNCH_EXT_NETWORKS: 'servarr_vpn'
-      LAUNCH_CAP_ADD: 'NET_ADMIN'
-      LAUNCH_PRIVELEGED: 'true'
-      LAUNCH_ENVIRONMENTS: 'VPN_SERVICE_PROVIDER=protonvpn VPN_TYPE=openvpn OPENVPN_USER_SECRETFILE=/run/secrets/proton_openvpn_user OPENVPN_PASSWORD_SECRETFILE=/run/secrets/proton_openvpn_password VPN_PORT_FORWARDING=on'
-      LAUNCH_VOLUMES: '/run/secrets/proton_openvpn_user:/run/secrets/proton_openvpn_user /run/secrets/proton_openvpn_password:/run/secrets/proton_opnevpn_password'
-      LAUNCH_PORTS: '
-        7070:7070
-        6881:6881
-        6881:6881/udp
-        8112:8112
-        6882:6882
-        6882:6882/udp
-        8989:8989'
-    networks:
-      - servarr
-      - vpn
-    deploy:
-      <<: *deploy
-
-  qbittorrent:
-    image: lscr.io/linuxserver/qbittorrent:latest
-    container_name: qbittorrent
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/New_York
-      - WEBUI_PORT=7070
-    volumes:
-      - qbittorrent:/config
-      - /mnt/data/torrents:/data/torrents
-    network_mode: "service:gluetun"
-    depends_on:
-      - gluetun
-    networks:
-      - servarr    
-    deploy:
-      <<: *deploy
-
-  deluge:
-    image: lscr.io/linuxserver/deluge:latest
-    container_name: deluge
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/New_York
-      - DELUGE_LOGLEVEL=error #optional
-    volumes:
-      - deluge:/config
-      - /mnt/data/torrents:/data/torrents
-    network_mode: "service:gluetun"
-    depends_on:
-      - gluetun_launcher
-    networks:
-      - servarr    
-      - vpn
-    deploy:
-      <<: *deploy
-
   readarr:
     image: lscr.io/linuxserver/readarr:nightly
     container_name: readarr

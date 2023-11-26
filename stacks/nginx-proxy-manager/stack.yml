@@ -9,6 +9,16 @@ networks:
     external: true
   servarr:
     external: true
+  syncthing:
+    external: true
+  invidious:
+    external: true
+  snapdrop:
+    external: true
+  radicale:
+    external: true
+  minecraft:
+    external: true
 
 services:
   npm:
@@ -25,6 +35,12 @@ services:
       PGID: 1000
     networks:
       - gitea
+      - servarr
+      - syncthing
+      - invidious
+      - snapdrop
+      - radicale
+      - minecraft
     deploy:
       <<: *deploy
 

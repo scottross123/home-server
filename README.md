@@ -26,3 +26,6 @@ Still a WIP
 - templates can be used for containers created by service
 - [docs on deploying a swarm](https://docs.docker.com/engine/swarm/services/)
 - ingress network for routing traffic that comes to any of the nodes
+check this out maybe?
+
+https://github.com/dmzoneill/lidarr-youtube-downloader

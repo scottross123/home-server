@@ -1,12 +1,12 @@
-# Can be enhanced with additional compose file 
-# See also https://docs.docker.com/compose/production/#modify-your-compose-file-for-production
-
 version: '3.7'
+
+networks:
+  radicale:
+    external: true
 
 services:
   radicale:
     image: tomsquest/docker-radicale
-    container_name: radicale
     ports:
       - 5232:5232
     init: true
@@ -24,7 +24,11 @@ services:
       test: curl -f http://127.0.0.1:5232 || exit 1
       interval: 30s
       retries: 3
-    restart: unless-stopped
+    networks:
+      - radicale
     volumes:
-      - ./data:/data
-      - ./config:/config:ro
+      # relative paths don't work with swarm
+      - /srv/docker/stacks/radicale/data:/data
+      - /srv/docker/stacks/radicale/config:/config:ro
+    deploy:
+       <<: *deploy

@@ -1,1 +1,0 @@
-reverse proxy is not working with calibre right now. calibre has two different exposed ports, one for http and one for https, neither is working with the reverse proxy. ill figure this out later maybe but rn i dont care

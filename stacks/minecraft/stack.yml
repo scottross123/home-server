@@ -1,0 +1,73 @@
+version: "3"
+
+# https://github.com/itzg/docker-minecraft-server
+
+# https://minecraft.fandom.com/wiki/Formatting_codes
+
+# TODO add a creative  server
+
+networks:
+  minecraft:
+    external: true
+
+services:
+  mc:
+    image: itzg/minecraft-server
+    ports:
+      - 25565:25565
+    environment:
+    stdin_open: true
+    volumes:
+      - /srv/minecraft/data:/data
+    environment:
+      EULA: "TRUE"
+      VERSION: "LATEST"
+      TYPE: "PAPER"
+      MOTD: "Minecraft Survival Server on Kamino"
+      DIFFICULTY: "NORMAL"
+      # WHITELIST: 
+      # OPS: 
+      # ICON: "./icon.png"
+      MAX_PLAYERS: 999
+      ENABLE_COMMAND_BLOCK: "TRUE"
+      SNOOPER_ENABLED: "FALSE"
+      TZ: US/Eastern
+      LOG_TIMESTAMP: "TRUE"
+    networks:
+      - minecraft
+    deploy:
+      <<: *deploy
+
+  web:
+    image: itzg/rcon
+    environment:
+      # CAHNGE SOON< THIS VERY BAD
+      RWA_USERNAME: admin
+      RWA_PASSWORD: admin
+      RWA_ADMIN: "TRUE"
+      RWA_RCON_HOST: mc
+      # needs to match the password configured for the container, which is 'minecraft' by default
+      RWA_RCON_PASSWORD: ${RCON_PASSWORD}
+    ports:
+      # web ui
+      - 4326:4326
+      # websocket access
+      - 4327:4327        
+    networks:
+      - minecraft
+    deploy:
+      <<: *deploy
+  
+  backups:
+    image: itzg/mc-backup
+    environment:
+      BACKUP_INTERVAL: "2h"
+      RCON_HOST: mc
+    volumes:
+      - /srv/minecraft/data:/data:ro
+      - /srv/minecraft/backups:/backups    
+    networks:
+      - minecraft
+    deploy:
+      <<: *deploy
+ 
