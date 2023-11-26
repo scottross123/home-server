@@ -1,0 +1,57 @@
+version: '3'
+
+volumes:
+  calibre:
+  calibre-web:
+
+secrets:
+  calibre_password
+
+networks:
+  servarr:
+    external: true
+
+services:
+  calibre: 
+      image: lscr.io/linuxserver/calibre:latest
+      container_name: calibre    
+      security_opt:
+        - seccomp:unconfined
+      environment:
+        - PUID=1000
+        - PGID=1000
+        - TZ=America/New_York
+        - PASSWORD=${CALIBRE_PASSWORD}
+          #- CLI_ARGS=#optional
+      volumes:
+        - calibre:/config
+        - /mnt/data/media/books:/Calibre_Library
+        - /mnt/data/torrents/books:/uploads
+      networks:
+        - servarr
+      ports:
+        - 8080:8080
+        - 8181:8181
+        - 8081:8081
+      deploy:
+        replicas: 0
+
+    calibre-web:
+      image: lscr.io/linuxserver/calibre-web:latest
+      container_name: calibre-web
+      environment:
+        - PUID=1000
+        - PGID=1000
+        - TZ=America/New_York
+        - OAUTHLIB_RELAX_TOKEN_SCOPE=1 #optional
+      volumes:
+        - calibre-web:/config
+        - /mnt/data/media/books:/books
+        - /mnt/data/torrents/books:/uploads
+      ports:
+        - 8083:8083
+      networks:
+        - servarr     
+      deploy:
+         <<: *deploy
+
