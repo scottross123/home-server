@@ -14,6 +14,8 @@ networks:
     external: true
   snapdrop:
     external: true
+  immich:
+    external: true
       #radicale:
       #external: true
 
@@ -36,6 +38,7 @@ services:
       - syncthing
       - invidious
       - snapdrop
+      - immich
         #- radicale
     restart: 'unless-stopped'
 
