@@ -1,9 +1,13 @@
 version: "3.8"
 
+# fix theses when im less pissed off
 volumes:
-  gluetun:
-  qbittorrent:
-  deluge:
+  torrent_gluetun:
+    external: true
+  torrent_qbittorrent:
+    external: true
+  torrent_deluge:
+    external: true
 
 secrets:
   proton_openvpn_username:
@@ -33,7 +37,7 @@ services:
       - 6882:6882 # deluge
       - 6882:6882/udp #deluge
     volumes:
-      - gluetun:/gluetun
+      - torrent_gluetun:/gluetun
     secrets:
       - proton_openvpn_username
       - proton_openvpn_password
@@ -57,7 +61,7 @@ services:
       - TZ=America/New_York
       - WEBUI_PORT=7070
     volumes:
-      - qbittorrent:/config
+      - torrent_qbittorrent:/config
       - /mnt/data/torrents:/data/torrents
     network_mode: "service:gluetun"
     depends_on:
@@ -72,7 +76,7 @@ services:
       - TZ=America/New_York
       - DELUGE_LOGLEVEL=error #optional
     volumes:
-      - deluge:/config
+      - torrent_deluge:/config
       - /mnt/data/torrents:/data/torrents
     network_mode: "service:gluetun"
     depends_on:
