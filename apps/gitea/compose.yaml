@@ -1,5 +1,4 @@
-version: "3.8"
-
+---
 volumes:
   data:
   config:
@@ -8,9 +7,9 @@ volumes:
 
 secrets:
   gitea_db_passwd:
-    external: true
+    file: ./secrets/gitea_db_passwd
   gitea_runner_token:
-    external: true
+    file: ./secrets/gitea_runner_token
 
 networks:
   gitea: 
@@ -41,8 +40,7 @@ services:
       - db
     networks:
       - gitea
-    deploy:
-      <<: *deploy
+    restart: 'unless-stopped'
 
   db:
     image: postgres:14
@@ -56,8 +54,7 @@ services:
       - postgres:/var/lib/postgresql/data    
     networks:
       - gitea
-    deploy:
-      <<: *deploy
+    restart: 'unless-stopped'
 
   runner:
     image: gitea/act_runner
@@ -75,6 +72,5 @@ services:
       - GITEA_RUNNER_REGISTRATION_TOKEN__FILE=/run/secrets/gitea_runner_token    
     networks:
       - gitea
-    deploy:
-      <<: *deploy
+    restart: 'unless-stopped'
 

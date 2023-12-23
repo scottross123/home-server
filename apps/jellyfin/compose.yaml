@@ -1,5 +1,4 @@
-version: "3.8"
-
+---
 volumes:
   jellyfin:
   jellyfin-cache:
@@ -26,17 +25,19 @@ services:
       - 8096:8096
     networks:
       - servarr     
+    restart: 'unless-stopped'
 
   jellyseerr:
-     image: fallenbagel/jellyseerr:latest
-     environment:  
-        - PUID=1000
-        - PGID=1000
-        - LOG_LEVEL=debug
-        - TZ=America/New_York
-     ports:
-        - 5055:5055
-     volumes:
-        - jellyseerr:/app/config
-     networks:
-        - servarr
+    image: fallenbagel/jellyseerr:latest
+    environment:  
+      - PUID=1000
+      - PGID=1000
+      - LOG_LEVEL=debug
+      - TZ=America/New_York
+    ports:
+      - 5055:5055
+    volumes:
+      - jellyseerr:/app/config
+    networks:
+      - servarr
+    restart: 'unless-stopped'

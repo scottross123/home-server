@@ -1,0 +1,41 @@
+---
+volumes:
+  data:
+  letsencrypt:
+
+networks:
+  gitea:
+    external: true
+  servarr:
+    external: true
+  syncthing:
+    external: true
+  invidious:
+    external: true
+  snapdrop:
+    external: true
+      #radicale:
+      #external: true
+
+services:
+  npm:
+    image: 'jc21/nginx-proxy-manager:latest'
+    ports:
+      - '80:80'
+      - '81:81'
+      - '443:443'
+    volumes:
+      - data:/data
+      - letsencrypt:/etc/letsencrypt
+    environment:
+      PUID: 1000
+      PGID: 1000
+    networks:
+      - gitea
+      - servarr
+      - syncthing
+      - invidious
+      - snapdrop
+        #- radicale
+    restart: 'unless-stopped'
+

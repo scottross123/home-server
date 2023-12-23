@@ -1,7 +1,5 @@
-version: "3.8"
-
+---
 # TODO create users
-
 networks:
   servarr:
     external: true
@@ -29,8 +27,7 @@ services:
       - 8787:8787
     networks:
       - servarr
-    deploy:
-      <<: *deploy
+    restart: 'unless-stopped'
 
   sonarr:
     image: lscr.io/linuxserver/sonarr:latest
@@ -44,9 +41,7 @@ services:
       - /mnt/data:/data
     networks:
       - servarr
-    network_mode: "service:gluetun"
-    deploy:
-      <<: *deploy
+    restart: 'unless-stopped'
 
   radarr:
     image: lscr.io/linuxserver/radarr:latest
@@ -63,8 +58,7 @@ services:
       - 7878:7878
     networks:
       - servarr
-    deploy:
-      <<: *deploy
+    restart: 'unless-stopped'
 
   lidarr:
     image: lscr.io/linuxserver/lidarr:latest
@@ -81,8 +75,7 @@ services:
       - 8686:8686    
     networks:
       - servarr     
-    deploy:
-       <<: *deploy
+    restart: 'unless-stopped'
 
   prowlarr:
     image: lscr.io/linuxserver/prowlarr:latest
@@ -98,5 +91,4 @@ services:
       - 9696:9696
     networks:
       - servarr     
-    deploy:
-       <<: *deploy
+    restart: 'unless-stopped'
