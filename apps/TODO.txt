@@ -1,0 +1,9 @@
+- nextcloud calendar
+- plauasible
+- gitlab
+- blogs
+- ddt calculator
+- watchtower 
+- vpn
+- mail server
+- torrents back on compose (maybe)

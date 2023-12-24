@@ -16,8 +16,8 @@ networks:
     external: true
   immich:
     external: true
-      #radicale:
-      #external: true
+  nextcloud-aio:
+    external: true
 
 services:
   npm:
@@ -30,8 +30,9 @@ services:
       - data:/data
       - letsencrypt:/etc/letsencrypt
     environment:
-      PUID: 1000
-      PGID: 1000
+      # nextcloud AIO wants me to run the reverse proxy as root, TODO see if this is actually necessary (edit /etc/sysctl.conf)
+      PUID: 0
+      PGID: 0
     networks:
       - gitea
       - servarr
@@ -39,6 +40,8 @@ services:
       - invidious
       - snapdrop
       - immich
-        #- radicale
+      - nextcloud-aio
     restart: 'unless-stopped'
-
+    # TODO look into if i should be using network mode host?
+    #extra_hosts: ["nextcloud-aio-mastercontainer:host-gateway"]
+    network_mode: 'host'
