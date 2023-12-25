@@ -41,3 +41,24 @@ services:
     networks:
       - servarr
     restart: 'unless-stopped'
+
+      #jellystat-db:
+      #image: postgres
+      #environment:
+      #POSTGRES_USER: postgres
+      #POSTGRES_PASSWORD_FILE: mypassword
+      #
+      #jellystat:
+      #image: jellystat
+      #environment:
+      #POSTGRES_USER: postgres
+      #POSTGRES_PASSWORD: mypassword
+      #POSTGRES_IP: jellystat-db
+      #POSTGRES_PORT: 5432
+      #JWT_SECRET: 'my-secret-jwt-key'
+      #TZ: Africa/Johannesburg
+      #ports:
+      #- "3000:3000"
+      #depends_on:
+      #- jellystat-db
+      #

@@ -3,6 +3,7 @@ volumes:
   data:
   letsencrypt:
 
+# TODO automate creation of networks
 networks:
   gitea:
     external: true
@@ -19,6 +20,10 @@ networks:
   nextcloud-aio:
     external: true
   homarr:
+    external: true
+  glances:
+    external: true
+  dashdot:
     external: true
 
 services:
@@ -44,7 +49,8 @@ services:
       - immich
       - nextcloud-aio
       - homarr
+      - glances
+      - dashdot
     restart: 'unless-stopped'
     # TODO look into if i should be using network mode host?
     #extra_hosts: ["nextcloud-aio-mastercontainer:host-gateway"]
-    network_mode: 'host'
