@@ -18,6 +18,8 @@ networks:
     external: true
   nextcloud-aio:
     external: true
+  homarr:
+    external: true
 
 services:
   npm:
@@ -41,6 +43,7 @@ services:
       - snapdrop
       - immich
       - nextcloud-aio
+      - homarr
     restart: 'unless-stopped'
     # TODO look into if i should be using network mode host?
     #extra_hosts: ["nextcloud-aio-mastercontainer:host-gateway"]

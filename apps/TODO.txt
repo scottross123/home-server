@@ -1,9 +1,13 @@
+- app launcher / dashboard
+- grafana + loki + promthese dashboards
 - nextcloud calendar
 - plauasible
 - gitlab
-- blogs
+- blog
 - ddt calculator
+- bookmd documentation
 - watchtower 
 - vpn
 - mail server
+- plex
 - torrents back on compose (maybe)
