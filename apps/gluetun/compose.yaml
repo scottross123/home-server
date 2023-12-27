@@ -1,0 +1,18 @@
+---
+services:
+  gluetun:
+    image: qmcgaw/gluetun
+    container_name: public
+    volumes:
+      - ./secrets/wg0.conf:/gluetun/wireguard/wg0.conf
+    cap_add:
+      - NET_ADMIN
+    environment:
+      - VPN_SERVICE_PROVIDER=custom
+      - VPN_TYPE=wireguard
+      - FIREWALL_VPN_INPUT_PORTS=${FIREWALL_VPN_INPUT_PORTS}
+
+  test:
+    image: nginx
+    container_name: test
+    network_mode: 'service:gluetun'

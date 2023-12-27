@@ -1,12 +1,16 @@
 - app launcher / dashboard
+  - homarr (done)
+  - heimdall (probably no)
+  - flame
 - grafana + loki + promthese dashboards
 - nextcloud calendar
-- plauasible
-- gitlab
-- blog
-- ddt calculator
-- bookmd documentation
-- watchtower 
+- public stuff
+  - plauasible
+  - gitlab
+  - blog
+  - ddt calculator
+  - bookmd documentation
+- watchtower  (done)
 - vpn
 - mail server
 - plex
