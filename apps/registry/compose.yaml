@@ -1,0 +1,8 @@
+---
+# TODO make reverse proxy infront or maybe not wortth it
+services:
+  registry:
+    image: registry:latest
+    ports:
+      - 5000:5000
+    restart: 'unless-stopped'
