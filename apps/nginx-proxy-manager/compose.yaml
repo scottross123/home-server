@@ -25,6 +25,8 @@ networks:
     external: true
   dashdot:
     external: true
+  registry:
+    external: true
 
 services:
   npm:
@@ -51,6 +53,7 @@ services:
       - homarr
       - glances
       - dashdot
+      - registry
     restart: 'unless-stopped'
     # TODO look into if i should be using network mode host?
     #extra_hosts: ["nextcloud-aio-mastercontainer:host-gateway"]

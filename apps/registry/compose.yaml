@@ -1,8 +1,14 @@
 ---
-# TODO make reverse proxy infront or maybe not wortth it
+# TODO add registry credentials
+networks:
+  registry:
+    external: true
+
 services:
   registry:
     image: registry:latest
     ports:
       - 5000:5000
+    networks:
+      - registry
     restart: 'unless-stopped'
