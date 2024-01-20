@@ -1,0 +1,35 @@
+---
+services:
+  prometheus:
+    image: prom/prometheus
+    restart: unless-stopped
+    ports:
+      - '9090:9090'
+    volumes:
+      - './prometheus.yml:/etc/prometheus/prometheus.yml'
+      - 'prometheus-data:/prometheus'
+
+  node_exporter:
+    image: quay.io/prometheus/node-exporter:latest
+    command:
+      - '--path.rootfs=/host'
+    network_mode: host
+    pid: host
+    restart: unless-stopped
+    volumes:
+      - '/:/host:ro,rslave'
+
+  grafana:
+    image: grafana/grafana
+    restart: unless-stopped
+    ports:
+     - '3000:3000'
+    volumes:
+      - grafana-storage:/var/lib/grafana
+    environment:
+      - GF_SERVER_ROOT_URL=http://192.168.1.222/
+      - GF_INSTALL_PLUGINS=grafana-clock-panel
+
+volumes:
+  prometheus-data:
+  grafana-storage:
