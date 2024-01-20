@@ -1,6 +1,6 @@
 ---
 networks:
-  snapdrop:
+  proxy:
     external: true
 
 volumes:
@@ -16,7 +16,7 @@ services:
     volumes:
       - config:/config
     networks:
-      - snapdrop
+      - proxy
     ports:
       - 8652:80
     restart: 'unless-stopped'

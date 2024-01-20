@@ -1,6 +1,6 @@
 ---
 networks:
-  dashdot:
+  proxy:
     external: true
 
 services:
@@ -19,4 +19,4 @@ services:
       - DASHDOT_ALWAYS_SHOW_PERCENTAGES=true
       - DASHDOT_USE_IMPERIAL=true
     networks:
-      - dashdot 
+      - proxy 

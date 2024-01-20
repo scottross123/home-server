@@ -1,4 +1,8 @@
 ---
+networks:
+  proxy:
+    external: true
+
 services:
   scrutiny:
     container_name: scrutiny
@@ -17,6 +21,8 @@ services:
     devices:
       - "/dev/sda"
       - "/dev/nvme0"
+    networks:
+      - proxy
 
 volumes:
   config:

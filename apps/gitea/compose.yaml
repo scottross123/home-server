@@ -12,7 +12,7 @@ secrets:
     file: ./secrets/runner_registration_token
 
 networks:
-  gitea: 
+  proxy:
     external: true
 
 services:
@@ -39,7 +39,7 @@ services:
     depends_on:
       - db
     networks:
-      - gitea
+      - proxy
     restart: 'unless-stopped'
 
   db:
@@ -53,7 +53,7 @@ services:
     volumes:
       - postgres:/var/lib/postgresql/data    
     networks:
-      - gitea
+      - proxy
     restart: 'unless-stopped'
 
   runner:
@@ -73,5 +73,5 @@ services:
       GITEA_RUNNER_NAME: gitea-runner-1 
       GITEA_RUNNER_LABELS: ubuntu-latest:docker://node:20-bookworm,ubuntu-22.04:docker://node:20-bookworm,ubuntu-20.04:docker://node:bullseye,ubuntu-18.04:docker://node:buster,cth-ubuntu-latest:docker://catthehacker/ubuntu:act-latest
     networks:
-      - gitea
+      - proxy
     restart: 'unless-stopped'

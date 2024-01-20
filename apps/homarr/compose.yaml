@@ -14,7 +14,7 @@ services:
     ports:
       - '7575:7575'
     networks:
-      - homarr
+      - proxy
 
 volumes:
   configs:
@@ -22,5 +22,5 @@ volumes:
   data:
 
 networks:
-  homarr:
+  proxy:
     external: true

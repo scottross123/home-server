@@ -6,7 +6,7 @@
 # TODO add a creative  server
 
 networks:
-  minecraft:
+  proxy:
     internal: true
 
 services:
@@ -32,7 +32,7 @@ services:
       TZ: US/Eastern
       LOG_TIMESTAMP: "TRUE"
     networks:
-      - minecraft
+      - proxy
     restart: 'unless-stopped'
 
   web:
@@ -51,7 +51,7 @@ services:
       # websocket access
       - 4327:4327        
     networks:
-      - minecraft
+      - proxy
     restart: 'unless-stopped'
   
   backups:
@@ -63,6 +63,6 @@ services:
       - /srv/minecraft/data:/data:ro
       - /srv/minecraft/backups:/backups    
     networks:
-      - minecraft
+      - proxy
     restart: 'unless-stopped'
  

@@ -1,6 +1,6 @@
 ---
 networks:
-  glances:
+  proxy:
     external: true
 
 services:
@@ -16,6 +16,6 @@ services:
       - /etc/os-release:/etc/os-release:ro
     pid: host
     networks:
-      - glances
+      - proxy
     ports: 
       - 61208:61208

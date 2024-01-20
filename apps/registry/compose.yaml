@@ -1,7 +1,7 @@
 ---
 # TODO add registry credentials
 networks:
-  registry:
+  proxy:
     external: true
 
 services:
@@ -10,5 +10,5 @@ services:
     ports:
       - 5000:5000
     networks:
-      - registry
+      - proxy
     restart: 'unless-stopped'

@@ -1,4 +1,8 @@
 ---
+network:
+  proxy:
+    external: true
+
 services:
   db_recipes:
     restart: always
@@ -7,6 +11,9 @@ services:
       - postgresql:/var/lib/postgresql/data
     env_file:
       - ./.env
+    networks:
+      - proxy
+
 
   web_recipes:
     restart: always
@@ -19,7 +26,9 @@ services:
       - nginx_config:/opt/recipes/nginx/conf.d
       - ./mediafiles:/opt/recipes/mediafiles
     depends_on:
-      - db_recipes
+      - db_recipes    
+    networks:
+      - proxy
 
   nginx_recipes:
     image: nginx:mainline-alpine
@@ -34,7 +43,9 @@ services:
       # Do not make this a bind mount, see https://docs.tandoor.dev/install/docker/#volumes-vs-bind-mounts
       - nginx_config:/etc/nginx/conf.d:ro
       - staticfiles:/static:ro
-      - ./mediafiles:/media:ro
+      - ./mediafiles:/media:ro    
+    networks:
+      - proxy
 
 volumes:
   nginx_config:

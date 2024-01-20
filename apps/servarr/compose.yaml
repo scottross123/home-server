@@ -1,7 +1,7 @@
 ---
 # TODO create users
 networks:
-  servarr:
+  proxy:
     external: true
 
 volumes:
@@ -26,7 +26,7 @@ services:
     ports:
       - 8787:8787
     networks:
-      - servarr
+      - proxy
     restart: 'unless-stopped'
 
   sonarr:
@@ -40,7 +40,7 @@ services:
       - sonarr:/config
       - /mnt/data:/data
     networks:
-      - servarr
+      - proxy
     restart: 'unless-stopped'
 
   radarr:
@@ -57,7 +57,7 @@ services:
     ports:
       - 7878:7878
     networks:
-      - servarr
+      - proxy
     restart: 'unless-stopped'
 
   lidarr:
@@ -74,7 +74,7 @@ services:
     ports:
       - 8686:8686    
     networks:
-      - servarr     
+      - proxy     
     restart: 'unless-stopped'
 
   prowlarr:
@@ -90,5 +90,5 @@ services:
     ports:
       - 9696:9696
     networks:
-      - servarr     
+      - proxy     
     restart: 'unless-stopped'

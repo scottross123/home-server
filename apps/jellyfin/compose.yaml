@@ -5,7 +5,7 @@ volumes:
   jellyseerr:
 
 networks:
-  servarr: 
+  proxy:
     external: true
 
 services:
@@ -24,7 +24,7 @@ services:
     ports:
       - 8096:8096
     networks:
-      - servarr     
+      - proxy     
     restart: 'unless-stopped'
 
   jellyseerr:
@@ -39,7 +39,7 @@ services:
     volumes:
       - jellyseerr:/app/config
     networks:
-      - servarr
+      - proxy
     restart: 'unless-stopped'
 
       #jellystat-db:

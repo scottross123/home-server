@@ -5,27 +5,7 @@ volumes:
 
 # TODO automate creation of networks
 networks:
-  gitea:
-    external: true
-  servarr:
-    external: true
-  syncthing:
-    external: true
-  invidious:
-    external: true
-  snapdrop:
-    external: true
-  immich:
-    external: true
-  nextcloud-aio:
-    external: true
-  homarr:
-    external: true
-  glances:
-    external: true
-  dashdot:
-    external: true
-  registry:
+  proxy:
     external: true
 
 services:
@@ -43,17 +23,7 @@ services:
       PUID: 0
       PGID: 0
     networks:
-      - gitea
-      - servarr
-      - syncthing
-      - invidious
-      - snapdrop
-      - immich
-      - nextcloud-aio
-      - homarr
-      - glances
-      - dashdot
-      - registry
+      - proxy
     restart: 'unless-stopped'
     # TODO look into if i should be using network mode host?
     #extra_hosts: ["nextcloud-aio-mastercontainer:host-gateway"]

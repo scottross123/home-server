@@ -1,4 +1,8 @@
 ---
+networks:
+  proxy:
+    external: true
+
 services:
   prometheus:
     image: prom/prometheus
@@ -8,6 +12,9 @@ services:
     volumes:
       - './prometheus.yml:/etc/prometheus/prometheus.yml'
       - 'prometheus-data:/prometheus'
+    networks:
+      - proxy
+
 
   node_exporter:
     image: quay.io/prometheus/node-exporter:latest
@@ -17,7 +24,9 @@ services:
     pid: host
     restart: unless-stopped
     volumes:
-      - '/:/host:ro,rslave'
+      - '/:/host:ro,rslave'    
+    networks:
+      - proxy
 
   grafana:
     image: grafana/grafana
@@ -28,7 +37,9 @@ services:
       - grafana-storage:/var/lib/grafana
     environment:
       - GF_SERVER_ROOT_URL=http://192.168.1.222/
-      - GF_INSTALL_PLUGINS=grafana-clock-panel
+      - GF_INSTALL_PLUGINS=grafana-clock-panel    
+    networks:
+      - proxy
 
 volumes:
   prometheus-data:

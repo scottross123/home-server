@@ -1,6 +1,6 @@
 ---
 networks:
-  syncthing:
+  proxy:
     external: true
 
 services:
@@ -19,5 +19,5 @@ services:
       - 22000:22000/udp # QUIC file transfers
       - 21027:21027/udp # Receive local discovery broadcasts
     networks:
-      - syncthing
+      - proxy
     restart: 'unless-stopped'

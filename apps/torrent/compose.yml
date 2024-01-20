@@ -16,7 +16,7 @@ secrets:
     file: /tmp/proton_openvpn_password
 
 networks:
-  servarr: 
+  proxy: 
     external: true
 
 # TODO add health checks
@@ -50,7 +50,7 @@ services:
       - SERVER_COUNTRIES="United States"
       - VPN_PORT_FORWARDING=on
     networks:
-      - servarr
+      - proxy
 
   qbittorrent:
     image: lscr.io/linuxserver/qbittorrent:latest

@@ -11,7 +11,7 @@ services:
     ports:
       - 8080:8080
     networks:
-      - nextcloud-aio
+      - proxy
     environment: 
       - APACHE_PORT=11000 # Is needed when running behind a web server or reverse proxy (like Apache, Nginx, Cloudflare Tunnel and else). See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md
       - APACHE_IP_BINDING=0.0.0.0 # Should be set when running behind a web server or reverse proxy (like Apache, Nginx, Cloudflare Tunnel and else) that is running on the same host. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md
@@ -41,6 +41,6 @@ volumes:
     name: nextcloud_aio_mastercontainer 
 
 networks:
-  nextcloud-aio:
+  proxy:
     external: true
 
