@@ -1,0 +1,18 @@
+---
+services:
+  searxng:
+    image: searxng/searxng
+    volumes:
+      - searxng:/etc/searxng
+    environment:
+      - BASE_URL=https://searxng.tipoca.city/
+      - INSTANCE_NAME=kamino
+    networks:
+      - proxy
+
+volumes:
+  searxng:
+
+networks:
+  proxy:
+    external: true
