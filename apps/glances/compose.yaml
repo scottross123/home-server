@@ -14,8 +14,9 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       # Uncomment the below line if you want glances to display host OS detail instead of container's
       - /etc/os-release:/etc/os-release:ro
-    pid: host
+    pid: host    
     networks:
       - proxy
     ports: 
-      - 61208:61208
+      - 61208:61208    
+

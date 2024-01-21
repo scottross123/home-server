@@ -38,9 +38,10 @@ services:
       - "2222:2222"
     depends_on:
       - db
+    restart: 'unless-stopped'    
     networks:
       - proxy
-    restart: 'unless-stopped'
+
 
   db:
     image: postgres:14

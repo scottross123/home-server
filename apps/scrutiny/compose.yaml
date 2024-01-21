@@ -11,9 +11,9 @@ services:
       - SYS_RAWIO
       # this is necesssary to get info on nvme drives
       - SYS_ADMIN
-    ports:
-      - "${WEB_PORT}:8080" # webapp
-      - "8086:8086" # influxDB admin
+        #ports:
+      #- "${WEB_PORT}:8080" # webapp
+      #- "8086:8086" # influxDB admin
     volumes:
       - /run/udev:/run/udev:ro
       - config:/opt/scrutiny/config
