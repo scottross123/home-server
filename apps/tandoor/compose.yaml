@@ -1,5 +1,5 @@
 ---
-network:
+networks:
   proxy:
     external: true
 
