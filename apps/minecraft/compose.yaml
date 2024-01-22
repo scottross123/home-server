@@ -20,7 +20,7 @@ services:
     environment:
       EULA: "TRUE"
       VERSION: "LATEST"
-      TYPE: "PAPER"
+        #TYPE: "PAPER"
       MOTD: "Minecraft Survival Server on Kamino"
       DIFFICULTY: "NORMAL"
       # WHITELIST: 
@@ -31,9 +31,7 @@ services:
       SNOOPER_ENABLED: "FALSE"
       TZ: US/Eastern
       LOG_TIMESTAMP: "TRUE"
-    networks:
-      - proxy
-    restart: 'unless-stopped'
+      restart: 'unless-stopped'
 
   web:
     image: itzg/rcon
