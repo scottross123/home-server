@@ -1,0 +1,24 @@
+---
+networks:
+  proxy:
+    external: true
+
+# using sqlite because it's easy
+volumes:
+  data:
+  extensions:
+
+services:
+  freshrss:
+    image: freshrss/freshrss
+    restart: unless-stopped
+    volumes:
+      - data:/var/www/FreshRSS/data
+      - extensions:/var/www/FreshRSS/data
+      - ./config.custom.php:/var/www/FreshRSS/data/config.custom.php
+      - ./config-user.custom.php:/var/www/FreshRSS/data/config-user.custom
+    environment:
+      TZ: America/New_York
+      CRON_MIN: '2,32'
+    networks:
+      - proxy

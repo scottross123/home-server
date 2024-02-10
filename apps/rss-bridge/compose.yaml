@@ -1,0 +1,13 @@
+---
+networks:
+  proxy:
+    external: true
+
+services:
+  rss-bridge:
+    image: rssbridge/rss-bridge:latest
+    volumes:
+      - ./config:/config
+    restart: unless-stopped
+    networks:
+      - proxy
