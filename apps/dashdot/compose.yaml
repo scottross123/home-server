@@ -8,8 +8,6 @@ services:
     image: mauricenino/dashdot:latest
     restart: unless-stopped
     privileged: true
-    ports:
-      - '3001:3001'
     volumes:
       # this feels incredibely unsafe, even if its read only
       - /:/mnt/host:ro

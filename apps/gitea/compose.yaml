@@ -28,13 +28,13 @@ services:
       - GITEA__server_ROOT_URL=${ROOT_URL}
       - GITEA__actions__ENABLED=true
       - GITEA__repository__ENABLE_PUSH_CREATE_USER=true
+      - GITEA__log__ENABLE_SSH_LOG=true
     volumes:
       - data:/var/lib/gitea
       - config:/etc/gitea
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
     ports:
-      - "3010:3000"
       - "2222:2222"
     depends_on:
       - db

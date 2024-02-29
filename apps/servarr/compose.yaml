@@ -4,14 +4,86 @@ networks:
   proxy:
     external: true
 
+secrets:
+  proton_openvpn_username:
+    file: ./secrets/proton_openvpn_username
+  proton_openvpn_password:
+    file: ./secrets/proton_openvpn_password
+
 volumes:
   lidarr:
   sonarr:
   radarr:
   readarr:	
   prowlarr:
+  gluetun:
+  qbittorrent:
+  deluge:
 
 services:
+  gluetun:
+    image: qmcgaw/gluetun
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    ports:
+      - 8888:8888/tcp # HTTP proxy
+      - 7070:7070 # qbit
+      - 6881:6881 # qbit
+      - 6881:6881/udp # qbit
+      - 8112:8112 # deluge
+      - 6882:6882 # deluge
+      - 6882:6882/udp #deluge
+    volumes:
+      - gluetun:/gluetun
+    secrets:
+      - proton_openvpn_username
+      - proton_openvpn_password
+    environment:
+      # TODO try use a wiregaurd conf instead of openvpn usernames/passwords
+      - VPN_SERVICE_PROVIDER=protonvpn
+      - VPN_TYPE=openvpn
+      - OPENVPN_USER_SECRETFILE=/run/secrets/proton_openvpn_username
+      - OPENVPN_PASSWORD_SECRETFILE=/run/secrets/proton_openvpn_password
+      - SERVER_COUNTRIES="United States"
+      - VPN_PORT_FORWARDING=on
+    networks:
+      - proxy
+
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+      - WEBUI_PORT=7070
+    volumes:
+      - qbittorrent:/config
+      - /mnt/data/torrents:/data/torrents
+    network_mode: "service:gluetun"
+    depends_on:
+      - gluetun
+    restart: 'unless-stopped'
+
+  deluge:
+    image: lscr.io/linuxserver/deluge:latest
+    container_name: deluge
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+      - DELUGE_LOGLEVEL=error #optional
+    volumes:
+      - deluge:/config
+      - /mnt/data/torrents:/data/torrents
+    network_mode: "service:gluetun"
+    depends_on: 
+      - gluetun 
+    restart: 'unless-stopped'
+
   readarr:
     image: lscr.io/linuxserver/readarr:nightly
     container_name: readarr

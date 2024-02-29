@@ -7,6 +7,9 @@ volumes:
 networks:
   proxy:
     external: true
+  # nextcloud-aio creates its own network for its containers, so i need to ad it here
+  nextcloud-aio:
+    external: true
 
 services:
   npm:
@@ -24,6 +27,7 @@ services:
       PGID: 0
     networks:
       - proxy
+      - nextcloud-aio
     restart: 'unless-stopped'
     # TODO look into if i should be using network mode host?
     #extra_hosts: ["nextcloud-aio-mastercontainer:host-gateway"]

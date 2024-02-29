@@ -2,8 +2,6 @@
 services:
   mealie:
     image: ghcr.io/mealie-recipes/mealie:v1.0.0 # 
-      #ports:
-      #- "9925:9000"
     deploy:
       resources:
         limits:
