@@ -95,8 +95,6 @@ services:
     volumes:
       - readarr:/config
       - /mnt/data:/data
-    ports:
-      - 8787:8787
     networks:
       - proxy
     restart: 'unless-stopped'
@@ -126,8 +124,6 @@ services:
     volumes:
       - radarr:/config
       - /mnt/data:/data
-    ports:
-      - 7878:7878
     networks:
       - proxy
     restart: 'unless-stopped'
@@ -143,8 +139,6 @@ services:
     volumes:
       - lidarr:/config
       - /mnt/data:/data
-    ports:
-      - 8686:8686    
     networks:
       - proxy     
     restart: 'unless-stopped'
@@ -159,8 +153,6 @@ services:
     volumes:
       - prowlarr:/config
       - /mnt/data:/data
-    ports:
-      - 9696:9696
     networks:
       - proxy     
     restart: 'unless-stopped'
