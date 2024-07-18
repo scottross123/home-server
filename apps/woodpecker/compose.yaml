@@ -16,6 +16,8 @@ services:
       - WOODPECKER_GITEA_CLIENT=${WOODPECKER_GITEA_CLIENT}
       - WOODPECKER_GITEA_SECRET=${WOODPECKER_GITEA_SECRET}
       - WOODPECKER_AGENT_SECRET=${WOODPECKER_AGENT_SECRET}
+    networks:
+      - proxy
 
   woodpecker-agent:
     image: woodpeckerci/woodpecker-agent:latest
@@ -29,6 +31,8 @@ services:
     environment:
       - WOODPECKER_SERVER=woodpecker-server:9000
       - WOODPECKER_AGENT_SECRET=${WOODPECKER_AGENT_SECRET}
+    networks:
+      - proxy
 
 volumes:
   woodpecker-server-data:

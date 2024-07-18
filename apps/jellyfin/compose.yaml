@@ -21,8 +21,6 @@ services:
       - jellyfin:/config
       - jellyfin-cache:/cache
       - /mnt/data/media:/media
-    ports:
-      - 8096:8096
     networks:
       - proxy     
     restart: 'unless-stopped'

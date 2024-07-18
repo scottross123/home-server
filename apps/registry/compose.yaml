@@ -4,6 +4,9 @@ networks:
   proxy:
     external: true
 
+volumes:
+  data:
+
 services:
   registry:
     image: registry:latest
@@ -12,3 +15,11 @@ services:
     networks:
       - proxy
     restart: 'unless-stopped'
+    environment:
+      REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY: /data
+      REGISTRY_AUTH: htpasswd
+      REGISTRY_AUTH_HTPASSWD_REALM: Registry Realm
+      REGISTRY_AUTH_HTPASSWD_PATH: /auth/registry.password
+    volumes:
+      - data:/data
+      - ./auth:/auth

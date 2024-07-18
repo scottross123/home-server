@@ -29,6 +29,7 @@ services:
       - GITEA__actions__ENABLED=true
       - GITEA__repository__ENABLE_PUSH_CREATE_USER=true
       - GITEA__log__ENABLE_SSH_LOG=true
+      - GITEA__webhook__ALLOWED_HOST_LIST=external,loopback
     volumes:
       - data:/var/lib/gitea
       - config:/etc/gitea

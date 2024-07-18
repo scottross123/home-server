@@ -1,0 +1,25 @@
+---
+networks:
+  proxy:
+    external: true
+
+volumes:
+  data:
+
+services:
+  nomie6-oss:
+    image: nomie6-oss
+    networks:
+      - proxy
+    depends_on:
+      - couchdb
+
+  # database needs to be exposed because nomie is a PWA
+  couchdb:
+    image: couchdb:latest
+    env_file: ./nomie.env
+    networks:
+      - proxy
+    volumes:
+      - data:/opt/couchdb/data
+      - ./couchdb.ini:/opt/couchdb/etc/local.d/couchdb.ini
